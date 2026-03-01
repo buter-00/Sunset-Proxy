@@ -1,5 +1,1 @@
-<p align="center">
-  <img src="assets/sunset.svg" width="120" alt="Sunset Proxy Logo">
-</p>
-
-# Sunset Proxy
+# <img src="assets/sunset.svg" width="45" align="center" alt="Sunset Proxy Logo"> Sunset Proxy
