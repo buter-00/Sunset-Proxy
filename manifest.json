@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Sunset Proxy",
-  "version": "0.0.3",
+  "version": "0.0.1",
   "permissions": [
     "proxy",
     "storage",
@@ -12,17 +12,34 @@
   "host_permissions": [
     "<all_urls>"
   ],
+  "icons": {
+    "16": "assets/16.png",
+    "48": "assets/48.png",
+    "128": "assets/128.png"
+  },
   "background": {
     "service_worker": "background.js"
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Sunset Proxy"
+    "default_title": "Sunset Proxy",
+    "default_icon": {
+      "16": "assets/16.png",
+      "48": "assets/48.png",
+      "128": "assets/128.png"
+    }
   },
   "web_accessible_resources": [
     {
-      "resources": ["locales/*", "account.json", "assets/*", "assets/flags/*"],
-      "matches": ["<all_urls>"],
+      "resources": [
+        "locales/*",
+        "account.json",
+        "assets/*",
+        "assets/flags/*"
+      ],
+      "matches": [
+        "<all_urls>"
+      ],
       "use_dynamic_url": false
     }
   ]
