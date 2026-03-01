@@ -1,0 +1,26 @@
+.btn-wrapper { width: 160px; height: 160px; position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: visible; margin: -5px 0 0 0; }
+.progress-ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-90deg); pointer-events: none; overflow: visible; }
+.ring-track { stroke: var(--border); stroke-width: 4; fill: none; }
+.ring-circle { stroke: var(--accent); stroke-width: 4; fill: none; stroke-dasharray: 440; stroke-dashoffset: 440; transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1); stroke-linecap: round; }
+.on .ring-circle { stroke-dashoffset: 0; filter: drop-shadow(0 0 8px var(--accent)); }
+.connecting .ring-circle { stroke-dashoffset: 220; animation: pulse 0.8s infinite; }
+.power-btn { width: 80px; height: 80px; border-radius: 50%; background: var(--btn); border: 2px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; z-index: 2; position: relative; }
+.power-btn:hover { border-color: var(--accent); box-shadow: 0 0 12px var(--accent-shadow); }
+.power-btn:active { transform: scale(0.92); }
+.power-btn svg { width: 32px; height: 32px; fill: var(--sub); transition: 0.3s; }
+.on .power-btn { border-color: var(--accent); background: rgba(var(--accent-rgb), 0.3); box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.5), 0 0 16px rgba(var(--accent-rgb), 0.3); }
+.on .power-btn svg { fill: var(--accent); }
+.connecting .power-btn { border-color: var(--accent); background: rgba(var(--accent-rgb), 0.3); box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.5), 0 0 16px rgba(var(--accent-rgb), 0.3); animation: pulse 0.8s infinite; }
+.connecting .power-btn svg { fill: var(--accent); }
+.status { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; background: var(--btn); border: 1px solid var(--border); font-size: 10px; font-weight: bold; color: var(--sub); transition: 0.3s; -webkit-text-stroke: 0.8px rgba(0, 0, 0, 0.2); margin: 0 4px 8px 0; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: 0.3s; }
+.on .status { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 8px var(--accent-shadow); }
+.on .status-dot { background: var(--accent); animation: pulse 1s infinite; }
+.connecting .status { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 8px var(--accent-shadow); }
+.connecting .status-dot { background: var(--accent); animation: pulse 0.8s infinite; }
+.timer { width: calc(100% - 20px); background: var(--btn); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin: 0 0 10px 0; display: flex; justify-content: center; align-items: baseline; gap: 4px; flex-shrink: 0; }
+.time-sep { font-size: 20px; font-weight: bold; margin: 0 6px; color: var(--sub); opacity: 0.5; }
+.t-val { font-family: monospace; font-size: 30px; font-weight: bold; color: var(--text); letter-spacing: 4px; line-height: 1; transition: color 0.3s; }
+.t-sub { font-size: 11px; color: var(--sub); font-weight: bold; text-transform: lowercase; }
+
+.google-icon-small { width: 18px; height: 18px; fill: #4285f4; }

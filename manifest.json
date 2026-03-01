@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Sunset Proxy",
+  "version": "0.0.3",
+  "permissions": [
+    "proxy",
+    "storage",
+    "privacy",
+    "webRequest",
+    "webRequestAuthProvider"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Sunset Proxy"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["locales/*", "account.json", "assets/*", "assets/flags/*"],
+      "matches": ["<all_urls>"],
+      "use_dynamic_url": false
+    }
+  ]
+}
