@@ -85,7 +85,7 @@ async checkPing(){
 const url=window.__pingUrl||SERVERS[0].val;
 const s=performance.now();
 try{
-await fetch(url,{method:'HEAD'});
+await fetch(url,{method:'HEAD',mode:'no-cors',cache:'no-store'});
 const t=Math.round(performance.now()-s);
 window.__pings&&(window.__pings.push(t),window.__pings.length>10&&window.__pings.shift());
 const a=window.__pings?.length?Math.round(window.__pings.reduce((x,y)=>x+y)/window.__pings.length):t;

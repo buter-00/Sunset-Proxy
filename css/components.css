@@ -8,9 +8,9 @@
 .power-btn:hover { border-color: var(--accent); box-shadow: 0 0 12px var(--accent-shadow); }
 .power-btn:active { transform: scale(0.92); }
 .power-btn svg { width: 32px; height: 32px; fill: var(--sub); transition: 0.3s; }
-.on .power-btn { border-color: var(--accent); background: rgba(var(--accent-rgb), 0.3); box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.5), 0 0 16px rgba(var(--accent-rgb), 0.3); }
+.on .power-btn { border-color: var(--accent); background: rgba(var(--accent-rgb), 0.3); }
 .on .power-btn svg { fill: var(--accent); }
-.connecting .power-btn { border-color: var(--accent); background: rgba(var(--accent-rgb), 0.3); box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.5), 0 0 16px rgba(var(--accent-rgb), 0.3); animation: pulse 0.8s infinite; }
+.connecting .power-btn { border-color: var(--accent); background: rgba(var(--accent-rgb), 0.3); animation: pulse 0.8s infinite; }
 .connecting .power-btn svg { fill: var(--accent); }
 .status { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; background: var(--btn); border: 1px solid var(--border); font-size: 10px; font-weight: bold; color: var(--sub); transition: 0.3s; -webkit-text-stroke: 0.8px rgba(0, 0, 0, 0.2); margin: 0 4px 8px 0; }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: 0.3s; }

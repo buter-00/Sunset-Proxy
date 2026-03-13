@@ -1,13 +1,12 @@
 {
   "manifest_version": 3,
   "name": "Sunset Proxy",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "permissions": [
     "proxy",
     "storage",
     "privacy",
-    "webRequest",
-    "webRequestAuthProvider"
+    "webRequest"
   ],
   "host_permissions": [
     "<all_urls>"

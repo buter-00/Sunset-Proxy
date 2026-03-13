@@ -4,13 +4,41 @@ try{window.__countriesData=await fetch(chrome.runtime.getURL('locales/countries.
 try{
 const a=await Storage.get(['accentColor']);
 window.__currentAccentColor=a?.accentColor||'#22c55e'
-}catch{window.__currentAccentColor='#22c55e'}
+window.__lastSavedAccentColor=window.__currentAccentColor
+}catch{
+window.__currentAccentColor='#22c55e'
+window.__lastSavedAccentColor=window.__currentAccentColor
+}
 
 try{
 const c=await fetch(chrome.runtime.getURL('account.json')).then(r=>r.json());
+window.__accountJson=c;
 window.__proxyInfo=c.proxy||{};
-window.__accountInfo={name:c.name||'User',icon:c.icon||''}
+window.__accountInfo={name:c.name||'User',icon:c.icon||''};
+
+const patch={};
+if(c.settings&&typeof c.settings==='object')patch.settings=c.settings;
+if(c?.settings?.theme)patch.theme=c.settings.theme;
+if(c?.settings?.lang)patch.lang=c.settings.lang;
+const fileAccent=c?.settings?.accentColor||c?.accentColor;
+if(fileAccent)patch.accentColor=fileAccent;
+if (Array.isArray(c.autoSites)) {
+  const existingSites = (await Storage.get(['autoSites'])).autoSites;
+  if (!Array.isArray(existingSites) || existingSites.length === 0) {
+    patch.autoSites = c.autoSites;
+  }
+}
+if(c?.proxy?.host&&c?.proxy?.port){
+  patch.proxyHost=c.proxy.host;
+  patch.proxyPort=Number(c.proxy.port);
+  patch.proxyIpv4=c.proxy.ipv4||'';
+}
+if(Object.keys(patch).length)await Storage.set(patch);
+if(patch.proxyHost&&patch.proxyPort){
+  chrome.runtime.sendMessage({action:'setProxyConfig',host:patch.proxyHost,port:patch.proxyPort,ipv4:patch.proxyIpv4||''},()=>{});
+}
 }catch{
+window.__accountJson=null;
 window.__proxyInfo={};
 window.__accountInfo={name:'User',icon:''}
 }
@@ -123,3 +151,5 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
   }
 });
+
+

@@ -53,7 +53,46 @@ r.onload=e=>{try{
 const data=JSON.parse(e.target.result);
 if(data.username&&data.password){
 Storage.saveCreds(data.username,data.password);
-UI.updateAccountStatus();
+if (data.settings && typeof data.settings === 'object') {
+  Storage.set({ settings: data.settings });
+  if (data.settings.theme) {
+    Storage.set({ theme: data.settings.theme });
+    const isDark = data.settings.theme === 'dark';
+    document.body.classList.toggle('light-mode', !isDark);
+    UI.els.tPath.setAttribute('d', isDark ? MOON_PATH : SUN_PATH);
+  }
+  if (data.settings.lang) {
+    Storage.set({ lang: data.settings.lang });
+    window.__lang = data.settings.lang;
+  }
+}
+const fileAccent = data?.settings?.accentColor || data?.accentColor;
+if (fileAccent) {
+  UI.setAccentColor(fileAccent, false);
+  Storage.set({ accentColor: fileAccent });
+}
+if (Array.isArray(data.autoSites)) {
+  Storage.set({ autoSites: data.autoSites });
+}
+if (data.proxy && data.proxy.host && data.proxy.port) {
+  const proxyPayload = {
+    proxyHost: data.proxy.host,
+    proxyPort: Number(data.proxy.port),
+    proxyIpv4: data.proxy.ipv4 || ''
+  };
+  Storage.set(proxyPayload);
+  chrome.runtime.sendMessage({
+    action: 'setProxyConfig',
+    host: proxyPayload.proxyHost,
+    port: proxyPayload.proxyPort,
+    ipv4: proxyPayload.proxyIpv4
+  }, () => {});
+}
+UI.updateTexts(window.__lang, () => {
+  UI.showStatus(window.__lang, window.__isConnecting);
+  UI.updateWebRTC();
+  UI.updateAccountStatus();
+});
 m.remove();
 }else {
       const t = Locales.get(window.__lang);
@@ -97,14 +136,8 @@ document.addEventListener('click',e=>!UI.els.menuWrapper.contains(e.target)&&UI.
 setupIp:()=>UI.els.ipToggle.onclick=UI.toggleIp,
 
 setupWebRTC:()=>UI.els.menuWebrtc.onclick=()=>{
-Storage.get(['webrtcOn','vpnOn']).then(r=>{
-if(r.vpnOn&&r.webrtcOn){
-Utils.sendMsg("disable",()=>setTimeout(()=>Utils.setWebRTC(false,()=>Storage.set({vpnOn:false}).then(()=>{
-window.__isConnecting=false;
-UI.els.main.classList.remove('connecting');
-UI.sync(false,UI.updateWebRTC);
-})),400));
-}else Utils.setWebRTC(!r.webrtcOn);
+Storage.get(['webrtcOn']).then(r=>{
+Utils.setWebRTC(!r.webrtcOn);
 });
 },
 
@@ -141,20 +174,29 @@ const colorSave=document.getElementById('color-save');
 const colorSelectFile=document.getElementById('color-select-file');
 const jsonFileInput=document.getElementById('json-file-input');
 const defaultColor='#22c55e';
+let previewActive=false;
+let previewOriginal=null;
 
 window.__selectedJsonFile=null;
 window.__selectedJsonData=null;
 
-const showColorControls=()=>{
+  const showColorControls=()=>{
     colorControls.style.display='flex';
   };
 
   const hideColorControls=()=>{
     colorControls.style.display='none';
+    if (previewActive && previewOriginal) {
+      UI.setAccentColor(previewOriginal, false);
+      previewActive = false;
+      previewOriginal = null;
+    }
   };
 
   colorBtn.onclick=()=>{
     colorPicker.click();
+    previewActive = true;
+    previewOriginal = window.__lastSavedAccentColor || window.__currentAccentColor || defaultColor;
     showColorControls();
   };
 
@@ -171,6 +213,8 @@ window.__currentAccentColor=defaultColor;
 colorPicker.value=defaultColor;
 UI.setAccentColor(defaultColor,false);
 Storage.set({accentColor:defaultColor});
+previewActive = false;
+previewOriginal = null;
 const t = Locales.get(window.__lang);
 UI.showNotification(t.color_reset_default);
 hideColorControls();
@@ -197,6 +241,8 @@ URL.revokeObjectURL(url);
 Storage.set({accentColor:colorToSave});
 window.__selectedJsonData=null;
 window.__selectedJsonFile=null;
+previewActive = false;
+previewOriginal = null;
     {
       const t = Locales.get(window.__lang);
       if (colorSelectFile) colorSelectFile.innerText = t.color_json;
@@ -204,6 +250,8 @@ window.__selectedJsonFile=null;
 }else{
   UI.setAccentColor(colorToSave,false);
   Storage.set({accentColor:colorToSave});
+  previewActive = false;
+  previewOriginal = null;
   {
       const t = Locales.get(window.__lang);
       UI.showNotification(t.color_saved);
@@ -396,10 +444,36 @@ setupImportExport:()=>{
           UI.updateAccountStatus();
         }
         if(json.proxy && json.proxy.host && json.proxy.port) {
-          Storage.set({proxyHost: json.proxy.host, proxyPort: json.proxy.port});
+          const proxyPayload = {
+            proxyHost: json.proxy.host,
+            proxyPort: Number(json.proxy.port),
+            proxyIpv4: json.proxy.ipv4 || ''
+          };
+          Storage.set(proxyPayload);
+          chrome.runtime.sendMessage({
+            action: 'setProxyConfig',
+            host: proxyPayload.proxyHost,
+            port: proxyPayload.proxyPort,
+            ipv4: proxyPayload.proxyIpv4
+          }, () => {});
         }
         if(json.settings) {
           Storage.set({settings: json.settings});
+          if (json.settings.theme) {
+            Storage.set({ theme: json.settings.theme });
+            const isDark = json.settings.theme === 'dark';
+            document.body.classList.toggle('light-mode', !isDark);
+            UI.els.tPath.setAttribute('d', isDark ? MOON_PATH : SUN_PATH);
+          }
+          if (json.settings.lang) {
+            Storage.set({ lang: json.settings.lang });
+            window.__lang = json.settings.lang;
+            UI.updateTexts(window.__lang, () => {
+              UI.showStatus(window.__lang, window.__isConnecting);
+              UI.updateWebRTC();
+              UI.updateAccountStatus();
+            });
+          }
         }
         if(json.autoSites && Array.isArray(json.autoSites)) {
           Storage.set({autoSites: json.autoSites});
@@ -450,21 +524,30 @@ setupImportExport:()=>{
     }
   });
   exDo.onclick = async () => {
-    const state = await Storage.get(['accentColor','autoSites','settings','proxyHost','proxyPort']);
+    const state = await Storage.get(['accentColor','autoSites','settings','proxyHost','proxyPort','proxyIpv4','theme','lang']);
     const creds = await Storage.getAuth();
 
-    const out = {};
+    const base = window.__selectedJsonData || window.__accountJson || {};
+    const out = { ...base };
 
-    if (window.__selectedJsonData) {
-      if (window.__selectedJsonData.name) out.name = window.__selectedJsonData.name;
-      if (window.__selectedJsonData.icon) out.icon = window.__selectedJsonData.icon;
-      if (window.__selectedJsonData.username) out.username = window.__selectedJsonData.username;
-      if (window.__selectedJsonData.password) out.password = window.__selectedJsonData.password;
-      if (window.__selectedJsonData.proxy) out.proxy = window.__selectedJsonData.proxy;
+    if (!out.name && window.__accountInfo?.name) out.name = window.__accountInfo.name;
+    if (!out.icon && window.__accountInfo?.icon) out.icon = window.__accountInfo.icon;
+
+    if (creds.username) out.username = creds.username;
+    if (creds.password) out.password = creds.password;
+
+    if (state.proxyHost && state.proxyPort) {
+      out.proxy = {
+        host: state.proxyHost,
+        port: Number(state.proxyPort)
+      };
+      if (state.proxyIpv4) out.proxy.ipv4 = state.proxyIpv4;
     }
 
-    out.settings = out.settings || state.settings || {};
+    out.settings = { ...(base.settings || {}), ...(state.settings || {}) };
     out.settings.accentColor = state.accentColor || out.settings.accentColor || null;
+    if (state.theme) out.settings.theme = state.theme;
+    if (state.lang) out.settings.lang = state.lang;
 
     out.autoSites = state.autoSites || [];
 
@@ -482,3 +565,6 @@ setupImportExport:()=>{
 
 setupJson:()=>{}
 };
+
+
+

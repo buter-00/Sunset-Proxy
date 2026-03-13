@@ -404,11 +404,9 @@ const UI = {
     const b = rgb & 255;
     const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
     const contrastText = luminance > 186 ? '#000' : '#fff';
-    if (!isPreview) {
-      document.documentElement.style.setProperty('--accent', color);
-      document.documentElement.style.setProperty('--accent-shadow', `rgba(${r},${g},${b},0.3)`);
-      document.documentElement.style.setProperty('--accent-rgb', `${r},${g},${b}`);
-    }
+    document.documentElement.style.setProperty('--accent', color);
+    document.documentElement.style.setProperty('--accent-shadow', `rgba(${r},${g},${b},0.3)`);
+    document.documentElement.style.setProperty('--accent-rgb', `${r},${g},${b}`);
 
     UI.els.colorPreview.style.backgroundColor = color;
     UI.els.colorPicker.value = color;
@@ -467,7 +465,6 @@ const UI = {
       clearAllStyles(el);
       if (uiMain && uiMain.classList.contains('on')) {
         el.style.borderColor = color;
-        el.style.boxShadow = `0 0 12px rgba(${r},${g},${b},0.3)`;
       }
       if (el.classList.contains('accent')) {
         el.style.backgroundColor = color;
@@ -629,6 +626,7 @@ const UI = {
     }
 
     if (!isPreview) {
+      window.__lastSavedAccentColor = color;
       Storage.set({ accentColor: color });
     }
   },

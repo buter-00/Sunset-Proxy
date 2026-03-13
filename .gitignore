@@ -3,3 +3,6 @@ scripts/
 fix.txt
 account.json
 Sunset Proxy.crx
+Sunset Proxy.pem
+*.pem
+*.crx
